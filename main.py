@@ -1,11 +1,10 @@
-from src.imgmelon import Interpreter
+from melon import ImageMelon
 
 
 def main():
     options = {"normalize": True}
-    interpreter = Interpreter(options)
-
-    result = interpreter.interpret("../melon/source_sample")
+    melon = ImageMelon(options)
+    result = melon.interpret("../PycharmProjects/melon/source_sample")
     print(result.shape)
 
 

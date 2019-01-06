@@ -1,2 +1,2 @@
 # melon
-Package for data interpretation
+Library for data interpretation
