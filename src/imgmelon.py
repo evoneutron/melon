@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from imgmelon_denominations import Denominations as denom
+from src.imgmelon_denominations import Denominations as denom
 
 try:
     from PIL import Image as pil_image
