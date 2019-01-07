@@ -1,4 +1,6 @@
+build
 dist
 venv
 .idea/
 *.hdf5
+*.egg-info
