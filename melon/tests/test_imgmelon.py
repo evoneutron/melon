@@ -9,8 +9,10 @@ class TestImageMelon(unittest.TestCase):
         self.melon = melon.ImageMelon()
 
     def test_result_shape(self):
-        result_arr = self.melon.interpret("./resources/images")
-        self.assertEqual((2, 3, 255, 255), result_arr.shape)
+        x, y = self.melon.interpret("./resources/images")
+
+        self.assertEqual((4, 3, 255, 255), x.shape)
+        self.assertEqual(4, y.shape[0])
 
 
 if __name__ == '__main__':

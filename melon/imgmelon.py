@@ -1,5 +1,8 @@
 import os
+from pathlib import Path
+
 import numpy as np
+
 from melon.imgmelon_denominations import Denominations as denom
 
 try:
@@ -16,6 +19,7 @@ class ImageMelon:
     __default_width = 255
     __default_normalize = False
     __default_preserve_aspect_ratio = False
+    __unsupported_file_formats = [".svg"]
 
     def __init__(self, options=None):
         self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self.__default_height
@@ -30,25 +34,73 @@ class ImageMelon:
         """
         Logic to interpret the images into the output format of "mxCxHxW or mxHxWxC"
         :param source_dir: source_sample directory of the files
-        :return: 4-D array of "mxCxHxW or mxHxWxC"
+        :return: tuple of 4-D array of "mxCxHxW or mxHxWxC" and labels
         """
-        only_files = [f for f in os.listdir(source_dir) if os.path.isfile(os.path.join(source_dir, f))]
+        dir = Path(source_dir)
+        labels = self.__read_labels(dir)
+        files = self.__list_and_validate(labels, dir)
 
+        m = len(files)
+
+        y = np.empty(m, dtype=np.int32)
         if self.__target_format == "channels_first":
-            result = np.ndarray(shape=(len(only_files), self.__target_channels, self.__target_height, self.__target_width),
-                                dtype=np.float32)
+            x = np.ndarray(shape=(m, self.__target_channels, self.__target_height, self.__target_width), dtype=np.float32)
         elif self.__target_format == "channels_last":
-            result = np.ndarray(shape=(len(only_files), self.__target_height, self.__target_width, self.__target_channels),
-                                dtype=np.float32)
+            x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__target_channels), dtype=np.float32)
         else:
             raise ValueError("Unknown data format %s" % self.__target_format)
 
-        for i, f in enumerate(only_files):
-            result[i] = self.__img_to_array(source_dir + "/" + f)
+        for i, file in enumerate(files):
+            label = labels.get(file.stem) or labels.get(file.name)
+            x[i] = self.__img_to_arr(file)
+            y[i] = label
 
+        return x, y
+
+    def __list_and_validate(self, labels, dir):
+        img_files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f)) and not f.startswith("labels")]
+        valid_files = []
+        for f in img_files:
+            file = dir / f
+            if file.suffix in self.__unsupported_file_formats:
+                print("Unsupported file format %s" % file.suffix)  # log.err and track
+                continue
+
+            label = labels.get(file.stem) or labels.get(file.name)
+            if not label:
+                print("Unable to map label to an image file %s" % f)  # log.err and track
+                continue
+            valid_files.append(file)
+        return valid_files
+
+    def __read_labels(self, dir):
+        """
+        Reads labels file and returns mapping of file to label
+        :param dir: source directory
+        :return: dictionary of file to label mapping
+        """
+        labels_files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f)) and f.startswith("labels")]
+        if not labels_files:
+            raise ValueError("Unable to locate labels file. Make sure labels file is in the source directory.")
+
+        result = {}
+        file = Path(dir / labels_files[0])
+        read_files = False
+        with open(file) as infile:
+            for line in infile:
+                line = line.strip()
+                if not line: continue
+                if line == "#map":
+                    read_files = True
+                    continue
+                if read_files:
+                    parts = line.split(":")
+                    if len(parts) != 2:
+                        print("Malformed line")  # log.err
+                    result[parts[0].strip()] = int(parts[1].strip())
         return result
 
-    def __img_to_array(self, img_file, dtype='float32'):
+    def __img_to_arr(self, img_file, dtype='float32'):
         img = pil_image.open(img_file)
         with img:
             hsize = self.__target_height
