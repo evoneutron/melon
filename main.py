@@ -8,7 +8,7 @@ def main():
     melon = ImageMelon(options)
 
     start_time = time.time()
-    x, y = melon.interpret("/Users/rjuga255/PycharmProjects/melon/tests/resources/online_album_cut")
+    x, y = melon.interpret("../melon/tests/resources/online_album_cut")
     print(x.shape)
     print("--- %s seconds ---" % (time.time() - start_time))
 
