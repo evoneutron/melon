@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 
 from melon.imgmelon_denominations import Denominations as denom
+from melon.melon import Melon
 
 try:
     from PIL import Image as pil_image
@@ -12,7 +13,7 @@ except ImportError:
     ImageEnhance = None
 
 
-class ImageMelon:
+class ImageMelon(Melon):
     __default_data_format = "channels_first"
     __default_channels = 3
     __default_height = 255
@@ -38,8 +39,7 @@ class ImageMelon:
         """
         dir = Path(source_dir)
         labels = self.__read_labels(dir)
-        files = self.__list_and_validate(labels, dir)
-
+        files = self._list_and_validate(labels, dir)
         m = len(files)
 
         y = np.empty(m, dtype=np.int32)
@@ -57,21 +57,18 @@ class ImageMelon:
 
         return x, y
 
-    def __list_and_validate(self, labels, dir):
-        img_files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f)) and not f.startswith("labels")]
-        valid_files = []
-        for f in img_files:
-            file = dir / f
-            if file.suffix in self.__unsupported_file_formats:
-                print("Unsupported file format %s" % file.suffix)  # log.err and track
-                continue
+    def _validate_file(self, labels, file):
+        if file.name.startswith("labels"):
+            return False
+        if file.suffix in self.__unsupported_file_formats:
+            print("Unsupported file format %s" % file.suffix)  # log.err and track
+            return False
 
-            label = labels.get(file.stem) or labels.get(file.name)
-            if not label:
-                print("Unable to map label to an image file %s" % f)  # log.err and track
-                continue
-            valid_files.append(file)
-        return valid_files
+        label = labels.get(file.stem) or labels.get(file.name)
+        if not label:
+            print("Unable to map label to an image file %s" % file)  # log.err and track
+            return False
+        return True
 
     def __read_labels(self, dir):
         """
@@ -108,7 +105,6 @@ class ImageMelon:
                 wpercent = (self.__target_width / float(img.size[0]))
                 hsize = int((float(img.size[1]) * float(wpercent)))
             img = img.resize((self.__target_width, hsize), pil_image.BICUBIC)
-
             arr = np.asarray(img, dtype=dtype)
             if len(arr.shape) == 3:
                 # RGB

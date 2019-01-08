@@ -4,3 +4,4 @@ venv
 .idea/
 *.hdf5
 *.egg-info
+__pycache__
