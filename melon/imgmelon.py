@@ -74,25 +74,27 @@ class ImageMelon(Melon):
         else:
             raise ValueError("Unknown data format %s" % self.__target_format)
 
-        with tqdm(total=m, unit="file", desc="Total") as pbar:
+        with tqdm(total=m, unit="file", desc="Total", leave=False) as pbar:
             with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
-                batch_size = m // self.__num_threads
+                batch_size = max(1, m // self.__num_threads)
                 remainder = m % self.__num_threads
-                end = m - remainder
 
                 futures = []
-
-                for i in range(0, end, batch_size):
+                for i in range(0, m, batch_size):
                     batch_start = i
-                    batch_end = i + batch_size + (0 if (i + batch_size < end) else remainder)
+                    is_final_batch = (i == m - remainder - batch_size)
+                    batch_end = i + batch_size + (remainder if is_final_batch else 0)
+
                     future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels, pbar)
                     futures.append(future)
+                    if is_final_batch:
+                        break
 
                 for future in as_completed(futures):
                     try:
                         future_result = future.result()
                     except Exception:
-                        log.error("Failed to retrieve future")
+                        log.error("Failed to get future")
         return x, y
 
     def _validate_file(self, labels, file):

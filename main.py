@@ -1,14 +1,12 @@
-from melon import ImageMelon
-
 import time
+
+from melon import ImageMelon
 
 
 def main():
-    options = {"normalize": False,
-               "num_threads": 8}
-    melon = ImageMelon(options)
-
     start_time = time.time()
+    options = {"normalize": False}
+    melon = ImageMelon(options)
     x, y = melon.interpret("../melon/tests/resources/temp_resource")
     print("--- %s seconds ---" % (time.time() - start_time))
 

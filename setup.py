@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.2",
     author="evoneutron",
     author_email="evoneutron@gmail.com",
-    description="Library for data interpretation",
+    description="Lightweight Data loading library for machine learning",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
