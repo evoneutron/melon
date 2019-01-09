@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="melon",
-    version="0.0.5",
+    version="0.0.3",
     author="evoneutron",
     author_email="evoneutron@gmail.com",
     description="Library for data interpretation",
@@ -18,10 +18,10 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["click==6.3"],
+    install_requires=["click==7.0", "tqdm==4.7.1"],
     entry_points={
         "console_scripts": [
-            "melon = scripts.cli:cli"
+            "melon=scripts.cli:cli"
         ]
     }
 )

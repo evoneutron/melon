@@ -2,11 +2,14 @@ import unittest
 
 import melon
 
+from melon.imgmelon_denominations import Denominations as denom
+
 
 class TestImageMelon(unittest.TestCase):
 
     def setUp(self):
-        self.melon = melon.ImageMelon()
+        options = {denom.num_threads: 1}
+        self.melon = melon.ImageMelon(options)
 
     def test_result_shape(self):
         x, y = self.melon.interpret("./resources/images")

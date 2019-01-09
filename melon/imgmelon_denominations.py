@@ -5,3 +5,4 @@ class Denominations:
     data_format = "data_format"
     normalize = "normalize"
     preserve_aspect_ratio = "preserve_aspect_ratio"
+    num_threads = "num_threads"
