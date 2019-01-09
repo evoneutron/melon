@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["click==7.0"],
+    install_requires=["click==7.0", "tqdm==4.7.1"],
     entry_points={
         "console_scripts": [
             "melon=scripts.cli:cli"

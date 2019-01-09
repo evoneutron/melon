@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 from pathlib import Path
+from tqdm import tqdm
 
 from melon.imgmelon_denominations import Denominations as denom
 from melon.melon import Melon
@@ -13,7 +14,6 @@ try:
     from PIL import Image as pil_image
 except ImportError:
     pil_image = None
-    ImageEnhance = None
 
 
 class ImageMelon(Melon):
@@ -61,23 +61,25 @@ class ImageMelon(Melon):
         else:
             raise ValueError("Unknown data format %s" % self.__target_format)
 
-        with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
-            batch_size = m // self.__num_threads
-            remainder = m % self.__num_threads
-            end = m - remainder
+        with tqdm(total=m, unit="file", desc="Total") as pbar:
+            with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
+                batch_size = m // self.__num_threads
+                remainder = m % self.__num_threads
+                end = m - remainder
 
-            futures = []
-            for i in range(0, end, batch_size):
-                batch_start = i
-                batch_end = i + batch_size + (0 if (i + batch_size < end) else remainder)
-                future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels)
-                futures.append(future)
+                futures = []
 
-            for future in as_completed(futures):
-                try:
-                    future_result = future.result()
-                except Exception:
-                    print("Failed to retrieve future result")
+                for i in range(0, end, batch_size):
+                    batch_start = i
+                    batch_end = i + batch_size + (0 if (i + batch_size < end) else remainder)
+                    future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels, pbar)
+                    futures.append(future)
+
+                for future in as_completed(futures):
+                    try:
+                        future_result = future.result()
+                    except Exception:
+                        print("Failed to retrieve future result")
         return x, y
 
     def _validate_file(self, labels, file):
@@ -145,7 +147,7 @@ class ImageMelon(Melon):
 
         return arr
 
-    def __worker(self, batch, index, x, y, labels):
+    def __worker(self, batch, index, x, y, labels, pbar):
         start = str(index)
         end = str(index + len(batch) - 1)
 
@@ -154,5 +156,6 @@ class ImageMelon(Melon):
             x[index] = self.__img_to_arr(file)
             y[index] = label
             index += 1
+            pbar.update(1)
 
         return "Processed batch [{},{}]".format(start, end)
