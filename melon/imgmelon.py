@@ -1,7 +1,7 @@
 import os
 import multiprocessing
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 from pathlib import Path
@@ -23,8 +23,8 @@ class ImageMelon(Melon):
     __default_width = 255
     __default_normalize = False
     __default_preserve_aspect_ratio = False
-    __unsupported_file_formats = [".svg"]
     __default_num_threads = 4
+    __unsupported_file_formats = [".svg"]
 
     def __init__(self, options=None):
         self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self.__default_height
@@ -38,10 +38,9 @@ class ImageMelon(Melon):
         try:
             self.__num_threads = options.get(denom.num_threads) if options and options.get(
                 denom.num_threads) else multiprocessing.cpu_count()
-            print("Setting number of workers to {}".format(self.__num_threads))
+            print("Number of workers set to {}".format(self.__num_threads))
         except NotImplementedError:
             self.__num_threads = self.__default_num_threads
-            print("Unable to auto-set cpu count. Falling back to {}".format(self.__num_threads))
 
     def interpret(self, source_dir):
         """
@@ -62,15 +61,23 @@ class ImageMelon(Melon):
         else:
             raise ValueError("Unknown data format %s" % self.__target_format)
 
-        batch_size = m // self.__num_threads
-        remainder = m % self.__num_threads
-        end = m - remainder
         with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
+            batch_size = m // self.__num_threads
+            remainder = m % self.__num_threads
+            end = m - remainder
+
+            futures = []
             for i in range(0, end, batch_size):
                 batch_start = i
                 batch_end = i + batch_size + (0 if (i + batch_size < end) else remainder)
-                executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels)
+                future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels)
+                futures.append(future)
 
+            for future in as_completed(futures):
+                try:
+                    future_result = future.result()
+                except Exception:
+                    print("Failed to retrieve future result")
         return x, y
 
     def _validate_file(self, labels, file):
@@ -148,4 +155,4 @@ class ImageMelon(Melon):
             y[index] = label
             index += 1
 
-        print("Processed batch [{},{}]".format(start, end))
+        return "Processed batch [{},{}]".format(start, end)

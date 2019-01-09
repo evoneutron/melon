@@ -21,7 +21,7 @@ setuptools.setup(
     install_requires=["click==7.0"],
     entry_points={
         "console_scripts": [
-            "melon = scripts.cli:cli"
+            "melon=scripts.cli:cli"
         ]
     }
 )

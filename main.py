@@ -4,7 +4,8 @@ import time
 
 
 def main():
-    options = {"normalize": True}
+    options = {"normalize": False,
+               "num_threads": 8}
     melon = ImageMelon(options)
 
     start_time = time.time()
