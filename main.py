@@ -9,7 +9,7 @@ def main():
     melon = ImageMelon(options)
 
     start_time = time.time()
-    x, y = melon.interpret("../melon/tests/resources/online_album_cut")
+    x, y = melon.interpret("../melon/tests/resources/temp_resource")
     print("--- %s seconds ---" % (time.time() - start_time))
 
 

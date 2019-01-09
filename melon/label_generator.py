@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(name)-12s: %(levelname)-8s: %(message)s')
+log = logging.getLogger(__name__)
 
 
 class LabelGenerator:
@@ -18,4 +22,4 @@ class LabelGenerator:
             for f in files:
                 file = Path(f)
                 infile.write(file.name + ":\n")
-        print("Generated labels file {} in '{}'".format(LabelGenerator.__default_labels_file_name, source_dir))
+        log.info("Generated labels file {} in '{}'".format(LabelGenerator.__default_labels_file_name, source_dir))

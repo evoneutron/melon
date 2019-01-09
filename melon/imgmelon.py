@@ -1,10 +1,11 @@
-import os
 import multiprocessing
-
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import numpy as np
-from pathlib import Path
+import logging
+
 from tqdm import tqdm
 
 from melon.imgmelon_denominations import Denominations as denom
@@ -12,6 +13,9 @@ from melon.melon import Melon
 
 try:
     from PIL import Image as pil_image
+
+    logging.basicConfig(level=logging.INFO, format='%(name)-12s: %(levelname)-8s: %(message)s')
+    log = logging.getLogger(__name__)
 except ImportError:
     pil_image = None
 
@@ -34,11 +38,12 @@ class ImageMelon(Melon):
         self.__normalize = options.get(denom.normalize) if options and options.get(denom.normalize) else self.__default_normalize
         self.__preserve_aspect_ratio = options.get(denom.preserve_aspect_ratio) if options and options.get(
             denom.preserve_aspect_ratio) else self.__default_preserve_aspect_ratio
+        log = logging.getLogger(__name__)
 
         try:
             self.__num_threads = options.get(denom.num_threads) if options and options.get(
                 denom.num_threads) else multiprocessing.cpu_count()
-            print("Number of workers set to {}".format(self.__num_threads))
+            log.info("Number of workers set to %s", self.__num_threads)
         except NotImplementedError:
             self.__num_threads = self.__default_num_threads
 
@@ -49,8 +54,16 @@ class ImageMelon(Melon):
         :return: tuple of 4-D array of "mxCxHxW or mxHxWxC" and labels
         """
         dir = Path(source_dir)
-        labels = self.__read_labels(dir)
-        files = self._list_and_validate(labels, dir)
+        try:
+            labels = self.__read_labels(dir)
+        except Exception as e:
+            raise ValueError("Failed to read labels. {}".format(str(e)))
+
+        try:
+            files = self._list_and_validate(labels, dir)
+        except Exception as e:
+            raise ValueError("Failed to read image files. {}".format(str(e)))
+
         m = len(files)
 
         y = np.empty(m, dtype=np.int32)
@@ -79,19 +92,19 @@ class ImageMelon(Melon):
                     try:
                         future_result = future.result()
                     except Exception:
-                        print("Failed to retrieve future result")
+                        log.error("Failed to retrieve future")
         return x, y
 
     def _validate_file(self, labels, file):
         if file.name.startswith("labels"):
             return False
         if file.suffix in self.__unsupported_file_formats:
-            print("Unsupported file format %s" % file.suffix)  # log.err and track
+            log.warning("Unsupported file format %s", file.suffix)
             return False
 
         label = labels.get(file.stem) or labels.get(file.name)
         if not label:
-            print("Unable to map label to an image file %s" % file)  # log.err and track
+            log.warning("Unable to map label to an image file %s", file)
             return False
         return True
 
@@ -118,7 +131,8 @@ class ImageMelon(Melon):
                 if read_files:
                     parts = line.split(":")
                     if len(parts) != 2:
-                        print("Malformed line")  # log.err
+                        log.warning("Malformed line in labels file %s", line)
+                        continue
                     result[parts[0].strip()] = int(parts[1].strip())
         return result
 
