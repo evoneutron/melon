@@ -4,10 +4,10 @@ Melon
 
 Melon is a lightweight package meant to simplify data processing for Deep Learning.
 
-It removes the need for boring boilerplate code that is meant for pre-processing the data prior to (model) training or inference.
-It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
+| It removes the need for boilerplate code to pre-process the data prior to (model) training or inference.
+| It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
 
-The format conventions align with Deep Learning frameworks such as **Tensorflow** / **PyTorch**, but the package also provides various level of customizations depending on the use-case.
+The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**. The package also provides various level of customizations depending on the use-case.
 
 
 Installation
@@ -43,9 +43,9 @@ Examples
         X, Y = loader.read(source_dir)
         ...
         with tf.Session() as s:
-            s.run(..., feed_dict={X_placeholder: X, Y_placeholder: Y})
+            s.run(..., feed_dict = {X_placeholder: X, Y_placeholder: Y})
 
-| ``resources/images`` directory should contain images to process (``svg`` format is currently not suppored).
+| ``source_dir`` directory should contain images to process (``svg`` format is currently not suppored).
 | See ``tests/resources/images`` for sample directory. In that directory there is an optional ``labels.txt`` file that is described in Labeling_.
 
 
@@ -59,11 +59,7 @@ Examples
         options = { "data_format": "channels_last",
                     "normalize": False }
         loader = ImageLoader(options)
-        source_dir = "resources/images"
-        X, Y = loader.read(source_dir)
         ...
-        with tf.Session() as s:
-            s.run(..., feed_dict={X_placeholder: X, Y_placeholder: Y})
 
 | This changes output of data to `channels-last` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
 
@@ -74,20 +70,18 @@ Options
 **Images**
 
 - width - width dimension of the output (pixels)
-    default: 255
+    default: ``255``
 - height - height dimension of the output (pixels)
-    default: 255
-- channels - channels dimension of the output
-    default: 3
+    default: ``255``
 - data_format - format of the output
     options:
-        - channels_first - ``Channel x Height x Width``
-        - channels_last - ``Height x Width x Channel``
+        - ``channels_first`` - `Channel x Height x Width`
+        - ``channels_last`` - `Height x Width x Channel`
 
 - normalize - normalize data
-    default: True
+    default: ``True``
 - num_threads - number of threads for parallel data processing
-    default: Number of cores of the server
+    default: ``Number of cores of the machine``
 
 Labeling
 -----------------
