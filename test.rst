@@ -4,10 +4,10 @@ Melon
 
 Melon is a lightweight package meant to simplify data processing for Deep Learning.
 
-It removes the need for boring boilerplate code that is written to pre-process data prior to (model) training or inference.
+It removes the need for boring boilerplate code that is meant for pre-processing the data prior to (model) training or inference.
 It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
 
-The output formats align with Deep Learning frameworks such as Tensorflow / PyTorch, but the package also provides various level of customizations depending on the use-case.
+The format conventions align with Deep Learning frameworks such as **Tensorflow** / **PyTorch**, but the package also provides various level of customizations depending on the use-case.
 
 
 Installation
