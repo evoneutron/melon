@@ -6,8 +6,8 @@ Melon is a lightweight package meant to simplify data processing for Deep Learni
 
 | It removes the need for boilerplate code to pre-process the data prior to (model) training or inference.
 | It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
-
-The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**. The package also provides various level of customizations depending on the use-case.
+|
+| The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**. The package also provides various level of customizations depending on the use-case.
 
 
 Installation
@@ -47,9 +47,8 @@ Examples
 
 | ``source_dir`` directory should contain images to process (``svg`` format is currently not suppored).
 | See ``tests/resources/images`` for sample directory. In that directory there is an optional ``labels.txt`` file that is described in Labeling_.
-
-
-*With custom* options_:
+|
+| *With custom* options_:
 
 .. code-block:: python
 
