@@ -45,8 +45,9 @@ Examples
         with tf.Session() as s:
             s.run(..., feed_dict={X_placeholder: X, Y_placeholder: Y})
 
-| "``resources/images``" directory should contain images to process (``svg`` format is currently not suppored).
-| See ``tests/resources/images`` for sample directory. There is a ``labels.txt`` file that is described in Labeling_.
+| ``resources/images`` directory should contain images to process (``svg`` format is currently not suppored).
+| See ``tests/resources/images`` for sample directory. In that directory there is an optional ``labels.txt`` file that is described in Labeling_.
+
 
 *With custom* options_:
 
@@ -60,8 +61,11 @@ Examples
         loader = ImageLoader(options)
         source_dir = "resources/images"
         X, Y = loader.read(source_dir)
+        ...
+        with tf.Session() as s:
+            s.run(..., feed_dict={X_placeholder: X, Y_placeholder: Y})
 
-| This changes output of data to channels-last format (each sample will be Height x Width x Channel) and doesn't normalize the data. See options_ for available options.
+| This changes output of data to `channels-last` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
 
 Options
 ------------------
@@ -77,8 +81,8 @@ Options
     default: 3
 - data_format - format of the output
     options:
-        - channels_first - Channel x Height x Width
-        - channels_last - Height x Width x Channel
+        - channels_first - ``Channel x Height x Width``
+        - channels_last - ``Height x Width x Channel``
 
 - normalize - normalize data
     default: True
