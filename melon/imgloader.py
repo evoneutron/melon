@@ -8,19 +8,18 @@ import logging
 
 from tqdm import tqdm
 
-from melon.imgmelon_denominations import Denominations as denom
-from melon.melon import Melon
+from melon.imgloader_denominations import Denominations as denom
+from melon.loader import Loader
 
 try:
     from PIL import Image as pil_image
 
     logging.basicConfig(level=logging.INFO, format='%(name)-12s: %(levelname)-8s: %(message)s')
-    log = logging.getLogger(__name__)
 except ImportError:
     pil_image = None
 
 
-class ImageMelon(Melon):
+class ImageLoader(Loader):
     __default_data_format = "channels_first"
     __default_channels = 3
     __default_height = 255
@@ -33,21 +32,20 @@ class ImageMelon(Melon):
     def __init__(self, options=None):
         self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self.__default_height
         self.__target_width = options.get(denom.width) if options and options.get(denom.width) else self.__default_width
-        self.__target_channels = options.get(denom.channels) if options and options.get(denom.channels) else self.__default_channels
         self.__target_format = options.get(denom.data_format) if options and options.get(denom.data_format) else self.__default_data_format
         self.__normalize = options.get(denom.normalize) if options and options.get(denom.normalize) else self.__default_normalize
         self.__preserve_aspect_ratio = options.get(denom.preserve_aspect_ratio) if options and options.get(
             denom.preserve_aspect_ratio) else self.__default_preserve_aspect_ratio
-        log = logging.getLogger(__name__)
+        self.__log = logging.getLogger(__name__)
 
         try:
             self.__num_threads = options.get(denom.num_threads) if options and options.get(
                 denom.num_threads) else multiprocessing.cpu_count()
-            log.info("Number of workers set to %s", self.__num_threads)
+            self.__log.info("Number of workers set to %s", self.__num_threads)
         except NotImplementedError:
             self.__num_threads = self.__default_num_threads
 
-    def interpret(self, source_dir):
+    def read(self, source_dir):
         """
         Logic to interpret the images into the output format of "mxCxHxW or mxHxWxC"
         :param source_dir: source_sample directory of the files
@@ -60,17 +58,17 @@ class ImageMelon(Melon):
             raise ValueError("Failed to read labels. {}".format(str(e)))
 
         try:
-            files = self._list_and_validate(labels, dir)
+            files = self._list_and_validate(dir)
         except Exception as e:
             raise ValueError("Failed to read image files. {}".format(str(e)))
 
         m = len(files)
 
-        y = np.empty(m, dtype=np.int32)
+        y = np.empty(m)
         if self.__target_format == "channels_first":
-            x = np.ndarray(shape=(m, self.__target_channels, self.__target_height, self.__target_width), dtype=np.float32)
+            x = np.ndarray(shape=(m, self.__default_channels, self.__target_height, self.__target_width), dtype=np.float32)
         elif self.__target_format == "channels_last":
-            x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__target_channels), dtype=np.float32)
+            x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__default_channels), dtype=np.float32)
         else:
             raise ValueError("Unknown data format %s" % self.__target_format)
 
@@ -93,34 +91,30 @@ class ImageMelon(Melon):
                 for future in as_completed(futures):
                     try:
                         future_result = future.result()
-                    except Exception:
-                        log.error("Failed to get future")
+                    except Exception  as e:
+                        self.__log.error("Failed to get future {}".format(str(e)))
         return x, y
 
-    def _validate_file(self, labels, file):
-        if file.name.startswith("labels"):
-            return False
+    def _validate_file(self, file):
         if file.suffix in self.__unsupported_file_formats:
-            log.warning("Unsupported file format %s", file.suffix)
+            self.__log.warning("Unsupported file format %s", file.suffix)
             return False
-
-        label = labels.get(file.stem) or labels.get(file.name)
-        if not label:
-            log.warning("Unable to map label to an image file %s", file)
+        if file.name.startswith("labels") or file.name.startswith("."):
             return False
         return True
 
     def __read_labels(self, dir):
         """
         Reads labels file and returns mapping of file to label
-        :param dir: source directory
+        :pararm dir: source directory
         :return: dictionary of file to label mapping
         """
+        result = {}
         labels_files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f)) and f.startswith("labels")]
         if not labels_files:
-            raise ValueError("Unable to locate labels file. Make sure labels file is in the source directory.")
+            self.__log.info("No labels file provided. Label vector will not be loaded.")
+            return result
 
-        result = {}
         file = Path(dir / labels_files[0])
         read_files = False
         with open(file) as infile:
@@ -133,9 +127,10 @@ class ImageMelon(Melon):
                 if read_files:
                     parts = line.split(":")
                     if len(parts) != 2:
-                        log.warning("Malformed line in labels file %s", line)
+                        self.__log.warning("Malformed line in labels file %s", line)
                         continue
-                    result[parts[0].strip()] = int(parts[1].strip())
+                    label = parts[1].strip()
+                    result[parts[0].strip()] = int(label) if label else None
         return result
 
     def __img_to_arr(self, img_file, dtype='float32'):
@@ -149,8 +144,10 @@ class ImageMelon(Melon):
             arr = np.asarray(img, dtype=dtype)
             if len(arr.shape) == 3:
                 # RGB
-                if self.__target_format == 'channels_first': arr = arr.transpose(2, 0, 1)
+                if self.__target_format == 'channels_first':
+                    arr = arr.transpose(2, 0, 1)
             elif len(arr.shape) == 2:
+                # Greyscale
                 if self.__target_format == 'channels_first':
                     arr = arr.reshape((1, arr.shape[0], arr.shape[1]))
                 else:
@@ -168,7 +165,7 @@ class ImageMelon(Melon):
         end = str(index + len(batch) - 1)
 
         for file in batch:
-            label = labels.get(file.stem) or labels.get(file.name)
+            label = labels.get(file.stem) or labels.get(file.name) or -1
             x[index] = self.__img_to_arr(file)
             y[index] = label
             index += 1
