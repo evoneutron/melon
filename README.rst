@@ -50,6 +50,7 @@ Examples
 -------
 
 | Number of images may be too large to fit into memory which creates the need for batch-processing.
+|
 
 .. code-block:: python
 
@@ -85,29 +86,35 @@ Examples
 
 Options
 ------------------
+
 .. _options:
 
 **Images**
 
-- width - width dimension of the output (pixels)
-    default: ``255``
-- height - height dimension of the output (pixels)
-    default: ``255``
-- data_format - format of the output
-    options:
-        - ``channels_first`` - `Channel x Height x Width`
-        - ``channels_last`` - `Height x Width x Channel`
+    width
+        Width of the output (pixels). default: ``255``
 
-- normalize - normalize data
-    default: ``True``
-- num_threads - number of threads for parallel data processing
-    default: ``Number of cores of the machine``
+    height
+        Height of the output (pixels). default: ``255``
+
+    batch_size
+        Batch size of each read. default: all images
+
+    data_format
+        | ``channels_first`` - `Channel x Height x Width` (default)
+        | ``channels_last`` - `Height x Width x Channel`
+
+    normalize
+        Normalize data. default: ``True``
+
+    num_threads - number of threads for parallel processing
+        default: ``Number of cores of the machine``
 
 Labeling
 -----------------
 .. _Labeling:
 
-| In supervised learning we need to map each image to a label for training / testing.
+| In supervised learning each image needs to be mapped to a label.
 | While the tool supports reading images without labels (e.g. for inference) it also provides a way to label them.
 |
 | To read images and labels ``source_dir`` needs to have ``labels`` (extension optional) file.
@@ -145,3 +152,11 @@ Labeling
 
 | After providing source directory path the tool will generate labels file in that directory that looks similar to the sample above.
 | Final step is to add label to each row in the generated file.
+
+
+Roadmap
+-------
+
+- Support for video data
+
+- Support for textual data
