@@ -35,12 +35,12 @@ Examples
 
 .. code-block:: python
 
-    from melon import ImageLoader
+    from melon import ImageReader
 
     def train():
-        loader = ImageLoader()
         source_dir = "resources/images"
-        X, Y = loader.read(source_dir)
+        reader = ImageReader(source_dir)
+        X, Y = reader.read()
         ...
         with tf.Session() as s:
             s.run(..., feed_dict = {X_placeholder: X, Y_placeholder: Y})
@@ -52,15 +52,36 @@ Examples
 
 .. code-block:: python
 
-    from melon import ImageLoader
+    from melon import ImageReader
 
     def train():
+        source_dir = "resources/images"
         options = { "data_format": "channels_last",
                     "normalize": False }
-        loader = ImageLoader(options)
+        reader = ImageReader(source_dir, options)
         ...
 
 | This changes output of data to `channels-last` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
+|
+| In case number of images is too large to fit into memory we can use batch-processing.
+
+.. code-block:: python
+
+    from melon import ImageReader
+
+    def train():
+        source_dir = "resources/images"
+        options = { "batch_size": 64 }
+        reader = ImageReader(source_dir, options)
+        while reader.has_next():
+            X, Y = reader.read()
+            ...
+
+| This reads images in batches of 64 images per batch until all images are read.
+| If ``batch_size`` is not specified then ``reader.read()`` will read all images in ``source_dir``.
+
+
+
 
 Options
 ------------------

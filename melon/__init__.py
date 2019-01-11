@@ -1,6 +1,6 @@
 name = "melon"
 author = "evoneutron"
 
-from .imgloader import ImageLoader
+from .imgreader import ImageReader
 
 from .label_generator import LabelGenerator

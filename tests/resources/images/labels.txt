@@ -3,10 +3,12 @@
 2 : pedestrian
 3 : cat
 4 : parrot
+5 : car
 
 #map
-img275:
-img324.jpg:
-img872:
-img928:
-img999:
+img275:3
+img324:4
+img551:5
+img872:1
+img928:3
+img999:2
