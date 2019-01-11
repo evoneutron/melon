@@ -1,15 +1,14 @@
+import logging
 import multiprocessing
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import numpy as np
-import logging
-
 from tqdm import tqdm
 
-from melon.imgloader_denominations import Denominations as denom
-from melon.loader import Loader
+from melon.imgreader_denominations import Denominations as denom
+from melon.reader import Reader
 
 try:
     from PIL import Image as pil_image
@@ -19,7 +18,7 @@ except ImportError:
     pil_image = None
 
 
-class ImageLoader(Loader):
+class ImageReader(Reader):
     __default_data_format = "channels_first"
     __default_channels = 3
     __default_height = 255
@@ -29,13 +28,19 @@ class ImageLoader(Loader):
     __default_num_threads = 4
     __unsupported_file_formats = [".svg"]
 
-    def __init__(self, options=None):
+    def __init__(self, source_dir, options=None):
+        """
+        :param source_dir: source directory of the image files
+        :param options: reader options
+        """
+        self.__source_dir = source_dir
         self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self.__default_height
         self.__target_width = options.get(denom.width) if options and options.get(denom.width) else self.__default_width
         self.__target_format = options.get(denom.data_format) if options and options.get(denom.data_format) else self.__default_data_format
         self.__normalize = options.get(denom.normalize) if options and options.get(denom.normalize) else self.__default_normalize
         self.__preserve_aspect_ratio = options.get(denom.preserve_aspect_ratio) if options and options.get(
             denom.preserve_aspect_ratio) else self.__default_preserve_aspect_ratio
+        self.__offset = 0
         self.__log = logging.getLogger(__name__)
 
         try:
@@ -45,13 +50,71 @@ class ImageLoader(Loader):
         except NotImplementedError:
             self.__num_threads = self.__default_num_threads
 
-    def read(self, source_dir):
+        self.__labels, self.__files = self.__read_meta()
+        if options and options.get(denom.batch_size):
+            self.__batch_size = min(options.get(denom.batch_size), len(self.__files))
+        else:
+            self.__batch_size = len(self.__files)
+
+    def read(self):
         """
-        Logic to interpret the images into the output format of "mxCxHxW or mxHxWxC"
-        :param source_dir: source_sample directory of the files
+        Logic to read the images into the output format of "mxCxHxW or mxHxWxC"
+        :param
         :return: tuple of 4-D array of "mxCxHxW or mxHxWxC" and labels
         """
-        dir = Path(source_dir)
+        try:
+            files = self.__files[self.__offset:self.__offset + self.__batch_size]
+            m = len(files)
+
+            y = np.empty(m, dtype=np.int32)
+            if self.__target_format == "channels_first":
+                x = np.ndarray(shape=(m, self.__default_channels, self.__target_height, self.__target_width),
+                               dtype=np.float32)
+            elif self.__target_format == "channels_last":
+                x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__default_channels),
+                               dtype=np.float32)
+            else:
+                raise ValueError("Unknown data format %s" % self.__target_format)
+
+            with tqdm(total=m, unit="file", desc="Total", leave=False) as pbar:
+                with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
+                    thread_batch_size = max(1, m // self.__num_threads)
+                    remainder = m % self.__num_threads
+
+                    futures = []
+                    for i in range(0, m, thread_batch_size):
+                        batch_start = i
+                        is_final_batch = (i == m - remainder - thread_batch_size)
+                        batch_end = i + thread_batch_size + (remainder if is_final_batch else 0)
+
+                        future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, pbar)
+                        futures.append(future)
+                        if is_final_batch:
+                            break
+
+                    for future in as_completed(futures):
+                        try:
+                            future_result = future.result()
+                        except Exception  as e:
+                            self.__log.error("Failed to get future {}".format(str(e)))
+            return x, y
+
+        finally:
+            self.__offset += self.__batch_size
+
+    def has_next(self):
+        return self.__offset < len(self.__files)
+
+    def _validate_file(self, file):
+        if file.suffix in self.__unsupported_file_formats:
+            self.__log.warning("Unsupported file format %s", file.suffix)
+            return False
+        if file.name.startswith("labels") or file.name.startswith("."):
+            return False
+        return True
+
+    def __read_meta(self):
+        dir = Path(self.__source_dir)
         try:
             labels = self.__read_labels(dir)
         except Exception as e:
@@ -61,47 +124,7 @@ class ImageLoader(Loader):
             files = self._list_and_validate(dir)
         except Exception as e:
             raise ValueError("Failed to read image files. {}".format(str(e)))
-
-        m = len(files)
-
-        y = np.empty(m)
-        if self.__target_format == "channels_first":
-            x = np.ndarray(shape=(m, self.__default_channels, self.__target_height, self.__target_width), dtype=np.float32)
-        elif self.__target_format == "channels_last":
-            x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__default_channels), dtype=np.float32)
-        else:
-            raise ValueError("Unknown data format %s" % self.__target_format)
-
-        with tqdm(total=m, unit="file", desc="Total", leave=False) as pbar:
-            with ThreadPoolExecutor(max_workers=self.__num_threads) as executor:
-                batch_size = max(1, m // self.__num_threads)
-                remainder = m % self.__num_threads
-
-                futures = []
-                for i in range(0, m, batch_size):
-                    batch_start = i
-                    is_final_batch = (i == m - remainder - batch_size)
-                    batch_end = i + batch_size + (remainder if is_final_batch else 0)
-
-                    future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, labels, pbar)
-                    futures.append(future)
-                    if is_final_batch:
-                        break
-
-                for future in as_completed(futures):
-                    try:
-                        future_result = future.result()
-                    except Exception  as e:
-                        self.__log.error("Failed to get future {}".format(str(e)))
-        return x, y
-
-    def _validate_file(self, file):
-        if file.suffix in self.__unsupported_file_formats:
-            self.__log.warning("Unsupported file format %s", file.suffix)
-            return False
-        if file.name.startswith("labels") or file.name.startswith("."):
-            return False
-        return True
+        return labels, files
 
     def __read_labels(self, dir):
         """
@@ -160,12 +183,12 @@ class ImageLoader(Loader):
 
         return arr
 
-    def __worker(self, batch, index, x, y, labels, pbar):
+    def __worker(self, batch, index, x, y, pbar):
         start = str(index)
         end = str(index + len(batch) - 1)
 
         for file in batch:
-            label = labels.get(file.stem) or labels.get(file.name) or -1
+            label = self.__labels.get(file.name) if file.name in self.__labels else -1
             x[index] = self.__img_to_arr(file)
             y[index] = label
             index += 1

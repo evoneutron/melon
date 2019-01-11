@@ -1,14 +1,9 @@
-import time
-
-from melon import ImageLoader
+from melon import ImageReader
 
 
 def main():
-    start_time = time.time()
-    options = {"normalize": False}
-    loader = ImageLoader(options)
-    x, y = loader.read("../melon/tests/resources/temp_resource")
-    print("--- %s seconds ---" % (time.time() - start_time))
+    loader = ImageReader("../melon/tests/resources/temp_resource")
+    x, y = loader.read()
 
 
 if __name__ == "__main__":

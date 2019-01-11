@@ -2,9 +2,10 @@ import os
 from abc import ABC, abstractmethod
 
 
-class Loader(ABC):
+class Reader(ABC):
+
     @abstractmethod
-    def read(self, source_dir):
+    def read(self):
         pass
 
     @abstractmethod
