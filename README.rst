@@ -8,7 +8,7 @@ Melon is a lightweight package meant to simplify data processing for Deep Learni
 | It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
 |
 | The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**.
-| The package also provides various level of customizations depending on the use-case.
+| The tool also provides various level of customizations depending on the use-case.
 
 
 Installation
@@ -47,7 +47,7 @@ Examples
 | ``source_dir`` directory should contain images to read. See ``tests/resources/images`` for a sample directory.
 | In that directory there is an optional ``labels.txt`` file that is described in Labeling_.
 
----------------
+-------
 
 | Number of images may be too large to fit into memory which creates the need for batch-processing.
 
@@ -63,8 +63,7 @@ Examples
             X, Y = reader.read()
             ...
 
-| This reads images in the batches of 32 until all images are read.
-| If ``batch_size`` is not specified then ``reader.read()`` will read all images.
+| This reads images in the batches of 32 until all images are read. If ``batch_size`` is not specified then ``reader.read()`` will read all images.
 
 ---------------
 
@@ -109,9 +108,9 @@ Labeling
 .. _Labeling:
 
 | In supervised learning we need to map each image to a label for training / testing.
-| While the package supports reading images without labels (e.g. for inference) it also provides a way to label them.
+| While the tool supports reading images without labels (e.g. for inference) it also provides a way to label them.
 |
-| For the package to correctly label the data, ``source_dir`` needs to have ``labels`` (extension optional) file.
+| To read images and labels ``source_dir`` needs to have ``labels`` (extension optional) file.
 | Sample file is provided in ``tests/reosurces/images/labels.txt``
 
 .. code-block:: text
@@ -131,4 +130,18 @@ Labeling
     img928:3
     img999:2
 
+| ``#legend`` section is optional but ``#map`` section is needed for mapping labels to an image.
 
+-----
+
+**Generating labels file**
+
+| To generate ``labels.txt`` we can use CLI with the following command:
+
+.. code-block:: text
+
+    $ melon generate
+    > Source dir:
+
+| After providing source directory path the tool will generate labels file in that directory that looks similar to the sample above.
+| Final step is to add label to each row in the generated file.
