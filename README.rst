@@ -1,4 +1,4 @@
-.. |Build-Status| image:: https://travis-ci.org/evoneturon/melon.svg?branch=master
+.. |Build-Status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
    :target: https://travis-ci.com/evoneutron/melon
 
 Melon
