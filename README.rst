@@ -4,7 +4,7 @@ Melon
 
 Melon is a lightweight package meant to simplify data processing for Deep Learning.
 
-| It removes the need for boilerplate code to pre-process the data prior to (model) training or inference.
+| It removes the need for boilerplate code to pre-process the data prior to (model) training, testing and inference.
 | It aims at standardizing data serialization and manipulation approaches, and simplifies model training.
 |
 | The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**.
@@ -44,12 +44,12 @@ Examples
         with tf.Session() as s:
             s.run(..., feed_dict = {X_placeholder: X, Y_placeholder: Y})
 
-| ``source_dir`` directory should contain images to read. See ``tests/resources/images`` for a sample directory.
-| In that directory there is an optional ``labels.txt`` file that is described in Labeling_.
+| ``source_dir`` directory should contain images that need to be read. See ``tests/resources/images`` for a sample directory.
+| In sample directory there is an optional ``labels.txt`` file that is described in Labeling_.
 
 -------
 
-| Number of images may be too large to fit into memory which creates the need for batch-processing.
+| Since number of images may be too large to fit into memory the tool supports batch-processing.
 |
 
 .. code-block:: python
@@ -81,7 +81,7 @@ Examples
         reader = ImageReader(source_dir, options)
         ...
 
-| This changes output of data to `channels-last` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
+| This changes output of data to ``channels-last`` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
 
 
 Options
@@ -98,7 +98,7 @@ Options
         Height of the output (pixels). default: ``255``
 
     batch_size
-        Batch size of each read. default: all images
+        Batch size of each read. default: All images in a directory
 
     data_format
         | ``channels_first`` - `Channel x Height x Width` (default)
@@ -108,7 +108,7 @@ Options
         Normalize data. default: ``True``
 
     num_threads - number of threads for parallel processing
-        default: ``Number of cores of the machine``
+        default: Number of cores of the machine
 
 Labeling
 -----------------
@@ -116,9 +116,21 @@ Labeling
 
 | In supervised learning each image needs to be mapped to a label.
 | While the tool supports reading images without labels (e.g. for inference) it also provides a way to label them.
+
+-----
+
+**Generating labels file**
+
+| To generate ``labels`` file we can use CLI with the following command:
+
+.. code-block:: text
+
+    $ melon generate
+    > Source dir:
+
+| After providing source directory the tool will generate ``labels`` file in that directory with blank labels. Final step is to add a label to each row in the generated file.
 |
-| To read images and labels ``source_dir`` needs to have ``labels`` (extension optional) file.
-| Sample file is provided in ``tests/reosurces/images/labels.txt``
+| For reference see ``tests/reosurces/images/labels.txt``:
 
 .. code-block:: text
 
@@ -137,22 +149,7 @@ Labeling
     img928:3
     img999:2
 
-| ``#legend`` section is optional but ``#map`` section is needed for mapping labels to an image.
-
------
-
-**Generating labels file**
-
-| To generate ``labels.txt`` we can use CLI with the following command:
-
-.. code-block:: text
-
-    $ melon generate
-    > Source dir:
-
-| After providing source directory path the tool will generate labels file in that directory that looks similar to the sample above.
-| Final step is to add label to each row in the generated file.
-
+| ``#legend`` section is optional but ``#map`` section is required to map a label to an image.
 
 Roadmap
 -------
