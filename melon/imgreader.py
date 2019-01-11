@@ -19,14 +19,14 @@ except ImportError:
 
 
 class ImageReader(Reader):
-    __default_data_format = "channels_first"
-    __default_channels = 3
-    __default_height = 255
-    __default_width = 255
-    __default_normalize = False
-    __default_preserve_aspect_ratio = False
-    __default_num_threads = 4
-    __unsupported_file_formats = [".svg"]
+    _default_data_format = "channels_first"
+    _default_channels = 3
+    _default_height = 255
+    _default_width = 255
+    _default_normalize = False
+    _default_preserve_aspect_ratio = False
+    _default_num_threads = 4
+    _unsupported_file_formats = [".svg"]
 
     def __init__(self, source_dir, options=None):
         """
@@ -34,12 +34,12 @@ class ImageReader(Reader):
         :param options: reader options
         """
         self.__source_dir = source_dir
-        self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self.__default_height
-        self.__target_width = options.get(denom.width) if options and options.get(denom.width) else self.__default_width
-        self.__target_format = options.get(denom.data_format) if options and options.get(denom.data_format) else self.__default_data_format
-        self.__normalize = options.get(denom.normalize) if options and options.get(denom.normalize) else self.__default_normalize
+        self.__target_height = options.get(denom.height) if options and options.get(denom.height) else self._default_height
+        self.__target_width = options.get(denom.width) if options and options.get(denom.width) else self._default_width
+        self.__target_format = options.get(denom.data_format) if options and options.get(denom.data_format) else self._default_data_format
+        self.__normalize = options.get(denom.normalize) if options and options.get(denom.normalize) else self._default_normalize
         self.__preserve_aspect_ratio = options.get(denom.preserve_aspect_ratio) if options and options.get(
-            denom.preserve_aspect_ratio) else self.__default_preserve_aspect_ratio
+            denom.preserve_aspect_ratio) else self._default_preserve_aspect_ratio
         self.__offset = 0
         self.__log = logging.getLogger(__name__)
 
@@ -48,9 +48,9 @@ class ImageReader(Reader):
                 denom.num_threads) else multiprocessing.cpu_count()
             self.__log.info("Number of workers set to %s", self.__num_threads)
         except NotImplementedError:
-            self.__num_threads = self.__default_num_threads
+            self.__num_threads = self._default_num_threads
 
-        self.__labels, self.__files = self.__read_meta()
+        self.__labels, self.__files = self._read_meta()
         if options and options.get(denom.batch_size):
             self.__batch_size = min(options.get(denom.batch_size), len(self.__files))
         else:
@@ -68,10 +68,10 @@ class ImageReader(Reader):
 
             y = np.empty(m, dtype=np.int32)
             if self.__target_format == "channels_first":
-                x = np.ndarray(shape=(m, self.__default_channels, self.__target_height, self.__target_width),
+                x = np.ndarray(shape=(m, self._default_channels, self.__target_height, self.__target_width),
                                dtype=np.float32)
             elif self.__target_format == "channels_last":
-                x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self.__default_channels),
+                x = np.ndarray(shape=(m, self.__target_height, self.__target_width, self._default_channels),
                                dtype=np.float32)
             else:
                 raise ValueError("Unknown data format %s" % self.__target_format)
@@ -87,7 +87,7 @@ class ImageReader(Reader):
                         is_final_batch = (i == m - remainder - thread_batch_size)
                         batch_end = i + thread_batch_size + (remainder if is_final_batch else 0)
 
-                        future = executor.submit(self.__worker, files[batch_start:batch_end], batch_start, x, y, pbar)
+                        future = executor.submit(self._worker, files[batch_start:batch_end], batch_start, x, y, pbar)
                         futures.append(future)
                         if is_final_batch:
                             break
@@ -106,17 +106,17 @@ class ImageReader(Reader):
         return self.__offset < len(self.__files)
 
     def _validate_file(self, file):
-        if file.suffix in self.__unsupported_file_formats:
+        if file.suffix in self._unsupported_file_formats:
             self.__log.warning("Unsupported file format %s", file.suffix)
             return False
         if file.name.startswith("labels") or file.name.startswith("."):
             return False
         return True
 
-    def __read_meta(self):
+    def _read_meta(self):
         dir = Path(self.__source_dir)
         try:
-            labels = self.__read_labels(dir)
+            labels = self._read_labels(dir)
         except Exception as e:
             raise ValueError("Failed to read labels. {}".format(str(e)))
 
@@ -126,7 +126,7 @@ class ImageReader(Reader):
             raise ValueError("Failed to read image files. {}".format(str(e)))
         return labels, files
 
-    def __read_labels(self, dir):
+    def _read_labels(self, dir):
         """
         Reads labels file and returns mapping of file to label
         :pararm dir: source directory
@@ -156,7 +156,7 @@ class ImageReader(Reader):
                     result[parts[0].strip()] = int(label) if label else None
         return result
 
-    def __img_to_arr(self, img_file, dtype='float32'):
+    def _img_to_arr(self, img_file, dtype='float32'):
         img = pil_image.open(img_file)
         with img:
             hsize = self.__target_height
@@ -183,13 +183,13 @@ class ImageReader(Reader):
 
         return arr
 
-    def __worker(self, batch, index, x, y, pbar):
+    def _worker(self, batch, index, x, y, pbar):
         start = str(index)
         end = str(index + len(batch) - 1)
 
         for file in batch:
             label = self.__labels.get(file.name) if file.name in self.__labels else -1
-            x[index] = self.__img_to_arr(file)
+            x[index] = self._img_to_arr(file)
             y[index] = label
             index += 1
             pbar.update(1)

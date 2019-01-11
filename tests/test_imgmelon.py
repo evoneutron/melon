@@ -1,7 +1,7 @@
 import pathlib
 from unittest import TestCase, mock, main
 
-import numpy as np
+import numpy
 
 from melon import ImageReader
 
@@ -16,51 +16,39 @@ class TestImageMelon(TestCase):
         self.assertEqual(5, y.shape[0])
 
     def test_batch_read(self):
-        mock_img_arr = np.ndarray((3, 255, 255))
+        options = {"batch_size": 2}
+        reader = ImageReader("./resources/images", options)
+        self.assertTrue(reader.has_next())
+        x, y = reader.read()
+        self.assertEqual((2, 3, 255, 255), x.shape)
+        self.assertEqual(2, y.shape[0])
 
-        files_count = 65
-        file_list = []
-        for i in range(files_count):
-            file_list.append(pathlib.Path("img_{}.jpg".format(i)))
+        self.assertTrue(reader.has_next())
+        x, y = reader.read()
+        self.assertEqual((2, 3, 255, 255), x.shape)
+        self.assertEqual(2, y.shape[0])
 
-        with mock.patch.object(ImageReader, '_list_and_validate', return_value=file_list):
-            with mock.patch.object(ImageReader, '_ImageReader__img_to_arr', return_value=mock_img_arr):
-                options = {"batch_size": 30}
-                reader = ImageReader("", options)
-
-                self.assertTrue(reader.has_next())
-                x, y = reader.read()
-                self.assertEqual((30, 3, 255, 255), x.shape)
-                self.assertEqual(30, y.shape[0])
-
-                self.assertTrue(reader.has_next())
-                x, y = reader.read()
-                self.assertEqual((30, 3, 255, 255), x.shape)
-                self.assertEqual(30, y.shape[0])
-
-                self.assertTrue(reader.has_next())
-                x, y = reader.read()
-                self.assertEqual((5, 3, 255, 255), x.shape)
-                self.assertEqual(5, y.shape[0])
-
-                self.assertFalse(reader.has_next())
+        self.assertTrue(reader.has_next())
+        x, y = reader.read()
+        self.assertEqual((1, 3, 255, 255), x.shape)
+        self.assertEqual(1, y.shape[0])
+        self.assertFalse(reader.has_next())
 
     def test_batch_read_ensure_all_files_were_read(self):
-        mock_img_arr = np.ndarray((3, 255, 255))
+        mock_img_arr = numpy.ndarray((3, 255, 255))
 
-        files_count = 65
         mock_files = []
         mock_labels = {}
-        for i in range(0, files_count):
+        for i in range(0, 25):
             file_name = "img_{}.jpg".format(i)
             mock_files.append(pathlib.Path(file_name))
             mock_labels[file_name] = int(i)
 
         with mock.patch.object(ImageReader, '_list_and_validate', return_value=mock_files):
-            with mock.patch.object(ImageReader, '_ImageReader__read_labels', return_value=mock_labels):
-                with mock.patch.object(ImageReader, '_ImageReader__img_to_arr', return_value=mock_img_arr):
-                    options = {"batch_size": 30}
-                    reader = ImageReader("", options)
+            with mock.patch.object(ImageReader, '_read_labels', return_value=mock_labels):
+                with mock.patch.object(ImageReader, '_img_to_arr', return_value=mock_img_arr):
+                    options = {"batch_size": 3}
+                    reader = ImageReader("./resources/images", options)
                     while reader.has_next():
                         x, y = reader.read()
                         for label in y:
