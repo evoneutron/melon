@@ -6,10 +6,10 @@ import numpy
 from melon import ImageReader
 
 
-class TestImageMelon(TestCase):
+class ImageReaderTestCase(TestCase):
 
     def test_result_shape(self):
-        self.reader = ImageReader("./resources/images")
+        self.reader = ImageReader("tests/resources/images")
         x, y = self.reader.read()
 
         self.assertEqual((5, 3, 255, 255), x.shape)
@@ -17,7 +17,7 @@ class TestImageMelon(TestCase):
 
     def test_batch_read(self):
         options = {"batch_size": 2}
-        reader = ImageReader("./resources/images", options)
+        reader = ImageReader("tests/resources/images", options)
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((2, 3, 255, 255), x.shape)
@@ -48,7 +48,7 @@ class TestImageMelon(TestCase):
             with mock.patch.object(ImageReader, '_read_labels', return_value=mock_labels):
                 with mock.patch.object(ImageReader, '_img_to_arr', return_value=mock_img_arr):
                     options = {"batch_size": 3}
-                    reader = ImageReader("./resources/images", options)
+                    reader = ImageReader("tests/resources/images", options)
                     while reader.has_next():
                         x, y = reader.read()
                         for label in y:
