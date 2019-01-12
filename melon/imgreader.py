@@ -205,13 +205,9 @@ class ImageReader(Reader):
 
         for file in batch:
             label = self.__labels.get(file.name) if file.name in self.__labels else -1
-            arrToStore=self._img_to_arr(file)
-            x[index] = arrToStore
+            x[index] = self._img_to_arr(file)
             y[index] = label
             index += 1
             pbar.update(1)
 
         return "Processed thread batch [{},{}]".format(start, end)
-
-
-
