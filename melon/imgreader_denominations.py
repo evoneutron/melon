@@ -7,3 +7,4 @@ class Denominations:
     preserve_aspect_ratio = "preserve_aspect_ratio"
     num_threads = "num_threads"
     batch_size = "batch_size"
+    label_encoder = "label_encoder"

@@ -14,7 +14,7 @@ class LabelGenerator:
         labels_file = Path(source_dir) / LabelGenerator.__default_labels_file_name
         if labels_file.exists():
             raise ValueError("Labels file already exists.")
-        files = [f for f in os.listdir(source_dir) if os.path.isfile(os.path.join(source_dir, f))]
+        files = [f for f in os.listdir(source_dir) if os.path.isfile(os.path.join(source_dir, f)) and not f.startswith(".")]
 
         with open(labels_file, "w") as infile:
             infile.write("---\n")

@@ -4,7 +4,7 @@
 Melon
 =====
 
-Melon is a lightweight package meant to simplify data processing for Deep Learning.
+| Melon is a lightweight package meant to simplify data processing for Deep Learning.
 
 | It removes the need for boilerplate code to pre-process the data prior to (model) training, testing and inference.
 | It aims at standardizing data serialization and manipulation approaches.
@@ -22,7 +22,7 @@ Install and update using `pip`_:
 
     $ pip install melon
 
-Supported in Python >=3.4, 2.7
+Supported in Python >=3.4
 
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
 

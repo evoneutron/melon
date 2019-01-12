@@ -1,14 +1,14 @@
 ---
-1 : human
-2 : pedestrian
-3 : cat
-4 : parrot
-5 : car
+0 : human
+1 : pedestrian
+2 : cat
+3 : parrot
+4 : car
 
 #map
-img275:3
-img324:4
-img551:5
-img872:1
-img928:3
-img999:2
+img275.jpg:2
+img324.jpg:3
+img551.jpg:4
+img872.svg:0
+img928.jpg:2
+img999.png:1
