@@ -102,8 +102,16 @@ Options
         Batch size of each read. default: All images in a directory
 
     data_format
-        | ``channels_first`` - `Channel x Height x Width` (default)
-        | ``channels_last`` - `Height x Width x Channel`
+        Format of the images data
+
+            | ``channels_first`` - `Channel x Height x Width` (default)
+            | ``channels_last`` - `Height x Width x Channel`
+
+    label_format
+        Format of the labels data
+
+            | ``label`` - as a vector, with a single label per image (default)
+            | ``one_hot`` - as a matrix, with one-hot vector per image
 
     normalize
         Normalize data. default: ``True``

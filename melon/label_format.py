@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class LabelEncoder(Enum):
+class LabelFormat(Enum):
     one_hot = "one_hot"
     label = "label"

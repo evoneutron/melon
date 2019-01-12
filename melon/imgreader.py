@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 
 from melon.imgreader_denominations import Denominations as denom
-from melon.label_encoder import LabelEncoder
+from melon.label_format import LabelFormat
 from melon.reader import Reader
 
 try:
@@ -27,7 +27,7 @@ class ImageReader(Reader):
     _default_normalize = True
     _default_preserve_aspect_ratio = False
     _default_num_threads = 4
-    _default_label_encoder = LabelEncoder.label
+    _default_label_format = LabelFormat.label
 
     _unsupported_file_formats = [".svg"]
 
@@ -41,8 +41,8 @@ class ImageReader(Reader):
         self.__width = options.get(denom.width) if options and denom.width in options else self._default_width
         self.__format = options.get(denom.data_format) if options and denom.data_format in options else self._default_data_format
 
-        self.__label_encoder = LabelEncoder[options.get(denom.label_encoder)] if options and denom.label_encoder in options \
-            else self._default_label_encoder
+        self.__label_format = LabelFormat[options.get(denom.label_format)] if options and denom.label_format in options \
+            else self._default_label_format
 
         self.__normalize = options.get(denom.normalize) if options and denom.normalize in options else self._default_normalize
         self.__preserve_aspect_ratio = options.get(denom.preserve_aspect_ratio) if options and denom.preserve_aspect_ratio in options \
@@ -102,7 +102,7 @@ class ImageReader(Reader):
                         except Exception  as e:
                             self._log.error("Failed to get future {}".format(str(e)))
 
-                    if self.__label_encoder == LabelEncoder.one_hot:
+                    if self.__label_format == LabelFormat.one_hot:
                         y = self._convert_to_one_hot(y)
             return x, y
 

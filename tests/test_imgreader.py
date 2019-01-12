@@ -16,7 +16,7 @@ class ImageReaderTestCase(TestCase):
         self.assertEqual(5, y.shape[0])
 
     def test_one_hot_result_shape(self):
-        reader = ImageReader(self._tests_dir, {"label_encoder": "one_hot"})
+        reader = ImageReader(self._tests_dir, {"label_format": "one_hot"})
         x, y = reader.read()
         self.assertEqual((5, 3, 255, 255), x.shape)
         self.assertEqual((5, 5), y.shape)
@@ -66,7 +66,7 @@ class ImageReaderTestCase(TestCase):
 
     def test_one_hot_result_order(self):
         pixels = self._expected_pixels()
-        reader = ImageReader(self._tests_dir, {"label_encoder": "one_hot", "normalize": False})
+        reader = ImageReader(self._tests_dir, {"label_format": "one_hot", "normalize": False})
         x, y = reader.read()
         for i in range(len(y)):
             label = y[i].tolist().index(1)  # in one-hot-encoding location of 1 should match the label
@@ -83,7 +83,7 @@ class ImageReaderTestCase(TestCase):
 
     def test_one_hot_result_order_when_batch_read(self):
         pixels = self._expected_pixels()
-        reader = ImageReader(self._tests_dir, {"label_encoder": "one_hot", "normalize": False, "batch_size": 1})
+        reader = ImageReader(self._tests_dir, {"label_format": "one_hot", "normalize": False, "batch_size": 1})
         while reader.has_next():
             x, y = reader.read()
             label = y[0].tolist().index(1)  # in one-hot-encoding location of 1 should match the label
