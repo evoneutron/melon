@@ -1,14 +1,14 @@
----
-0 : human
-1 : pedestrian
-2 : cat
-3 : parrot
-4 : car
+#legend
+pedestrian:0
+cat:1
+parrot:2
+car:3
+apple tree:4
 
 #map
-img275.jpg:2
-img324.jpg:3
-img551.jpg:4
-img872.svg:0
-img928.jpg:2
-img999.png:1
+img275.jpg:1
+img324.jpg:2
+img551.jpg:3
+img928.jpg:1
+img999.png:0
+img736.png:4
