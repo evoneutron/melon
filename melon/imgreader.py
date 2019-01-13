@@ -1,6 +1,6 @@
+import sys
 import logging
 import multiprocessing
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -102,7 +102,7 @@ class ImageReader(Reader):
                         except Exception  as e:
                             self._log.error("Failed to get future {}".format(str(e)))
 
-                    if self.__label_format == LabelFormat.one_hot:
+                    if self.__label_format == LabelFormat.one_hot and self.__classes:
                         y = self._convert_to_one_hot(y)
             return x, y
 
@@ -140,13 +140,14 @@ class ImageReader(Reader):
         :return: tuple of 'dictionary of file to label mapping' and 'set of all distinct classes'
         """
         labels = {}
+        classes = []
+
         labels_files = list(Path(self.__source_dir).glob("labels*"))
         if not labels_files:
             self._log.info("No labels file provided. Label vector will not be loaded.")
-            return labels
+            return labels, classes
 
-        classes = set()
-
+        max_class = - sys.maxsize
         file = labels_files[0]
         read_files = False
         with open(str(file)) as infile:
@@ -163,8 +164,12 @@ class ImageReader(Reader):
                         continue
                     label = parts[1].strip()
                     if label:
-                        labels[parts[0].strip()] = int(label)
-                        classes.add(int(label))
+                        label = int(label)
+                        labels[parts[0].strip()] = label
+                        max_class = max(max_class, label)
+
+        if max_class > 0:
+            classes = list(range(max_class + 1))
 
         return labels, classes
 

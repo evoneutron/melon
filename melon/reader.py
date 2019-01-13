@@ -13,7 +13,7 @@ class Reader(ABC):
         pass
 
     def _list_and_validate(self, source_dir):
-        files = list(Path(source_dir).glob("**/*"))
+        files = list(Path(source_dir).glob("*.*"))
         valid_files = []
         for file in files:
             if self._validate_file(file):
