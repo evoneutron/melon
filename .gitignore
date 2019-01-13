@@ -5,5 +5,7 @@ venv
 *.hdf5
 *.egg-info
 __pycache__
-main.py
+./main.py
 temp_resource
+main.py
+.python-version

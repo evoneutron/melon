@@ -1,0 +1,14 @@
+#legend
+pedestrian:0
+cat:1
+parrot:2
+car:3
+apple tree:4
+
+#map
+img275.jpg:1
+img324.jpg:2
+img551.jpg:3
+img928.jpg:1
+img999.png:0
+img736.png:4

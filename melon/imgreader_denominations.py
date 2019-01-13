@@ -6,3 +6,5 @@ class Denominations:
     normalize = "normalize"
     preserve_aspect_ratio = "preserve_aspect_ratio"
     num_threads = "num_threads"
+    batch_size = "batch_size"
+    label_format = "label_format"
