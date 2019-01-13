@@ -27,7 +27,7 @@ class ImageReader(Reader):
     _default_normalize = True
     _default_preserve_aspect_ratio = False
     _default_num_threads = 4
-    _default_label_format = LabelFormat.label
+    _default_label_format = LabelFormat.one_hot
 
     _unsupported_file_formats = [".svg"]
 

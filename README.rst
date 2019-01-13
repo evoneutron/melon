@@ -70,6 +70,8 @@ Examples
 
 ---------------
 
+.. _Custom options:
+
 | *With custom* options_:
 
 .. code-block:: python
@@ -84,11 +86,10 @@ Examples
 
 | This changes output of data to ``channels-last`` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
 
+.. _options:
 
 Options
 ------------------
-
-.. _options:
 
 **Images**
 
@@ -110,8 +111,9 @@ Options
     label_format
         Format of the labels data
 
-            | ``label`` - as a vector, with a single label per image (default)
-            | ``one_hot`` - as a matrix, with one-hot vector per image
+            | ``one_hot`` - as a matrix, with one-hot vector per image (default)
+            | ``label`` -  as a vector, with a single label per image
+
 
     normalize
         Normalize data. default: ``True``
@@ -119,9 +121,10 @@ Options
     num_threads - number of threads for parallel processing
         default: Number of cores of the machine
 
+.. _Labeling:
+
 Labeling
 -----------------
-.. _Labeling:
 
 | In supervised learning each image needs to be mapped to a label.
 | While the tool supports reading images without labels (e.g. for inference) it also provides a way to label them.
@@ -159,6 +162,12 @@ Labeling
     img999:2
 
 | ``#legend`` section is optional but ``#map`` section is required to map a label to an image.
+
+-----
+
+**Format of the labels**
+
+| Label's format can be specified in `Custom options`_. It defaults to ``one-hot`` format.
 
 Roadmap
 -------
