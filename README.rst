@@ -22,7 +22,7 @@ Install and update using `pip`_:
 
     $ pip install melon
 
-Supported in Python >=3.4
+Supported in Python >=3.4.0
 
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
 

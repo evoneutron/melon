@@ -7,5 +7,5 @@ venv
 __pycache__
 ./main.py
 temp_resource
-tempmain.py
+main.py
 .python-version
