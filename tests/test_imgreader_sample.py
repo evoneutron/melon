@@ -7,7 +7,7 @@ from melon import ImageReader
 
 
 class ImageReaderTestCase(TestCase):
-    _tests_dir = "tests/resources/images"
+    _tests_dir = "tests/resources/images/sample"
 
     def test_result_shape(self):
         reader = ImageReader(self._tests_dir)
@@ -15,28 +15,28 @@ class ImageReaderTestCase(TestCase):
         self.assertEqual((6, 3, 255, 255), x.shape)
         self.assertEqual((6, 5), y.shape)
 
-    def test_one_hot_result_shape(self):
-        reader = ImageReader(self._tests_dir)
+    def test_result_shape_label_format(self):
+        reader = ImageReader(self._tests_dir, {"label_format": "label"})
         x, y = reader.read()
         self.assertEqual((6, 3, 255, 255), x.shape)
-        self.assertEqual((6, 5), y.shape)
+        self.assertEqual((6,), y.shape)
 
     def test_batch_read_when_no_remainder(self):
         reader = ImageReader(self._tests_dir, {"batch_size": 2})
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((2, 3, 255, 255), x.shape)
-        self.assertEqual(2, y.shape[0])
+        self.assertEqual((2, 5), y.shape)
 
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((2, 3, 255, 255), x.shape)
-        self.assertEqual(2, y.shape[0])
+        self.assertEqual((2, 5), y.shape)
 
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((2, 3, 255, 255), x.shape)
-        self.assertEqual(2, y.shape[0])
+        self.assertEqual((2, 5), y.shape)
         self.assertFalse(reader.has_next())
 
     def test_batch_read_when_remainder(self):
@@ -44,12 +44,12 @@ class ImageReaderTestCase(TestCase):
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((5, 3, 255, 255), x.shape)
-        self.assertEqual(5, y.shape[0])
+        self.assertEqual((5, 5), y.shape)
 
         self.assertTrue(reader.has_next())
         x, y = reader.read()
         self.assertEqual((1, 3, 255, 255), x.shape)
-        self.assertEqual(1, y.shape[0])
+        self.assertEqual((1, 5), y.shape)
 
     def test_batch_read_ensure_all_files_were_read(self):
         mock_img_arr = numpy.ndarray((3, 255, 255))
@@ -77,7 +77,7 @@ class ImageReaderTestCase(TestCase):
                     self.assertFalse(reader.has_next())
                     self.assertTrue(not mock_labels)
 
-    def test_one_hot_result_order(self):
+    def test_result_order(self):
         pixels = self._expected_pixels()
         reader = ImageReader(self._tests_dir, {"normalize": False})
         x, y = reader.read()
@@ -94,7 +94,7 @@ class ImageReaderTestCase(TestCase):
         self.assertEqual((6, 3, 255, 255), x.shape)
         self.assertEqual((6, 5), y.shape)
 
-    def test_one_hot_result_order_when_batch_read(self):
+    def test_result_order_when_batch_read(self):
         pixels = self._expected_pixels()
         reader = ImageReader(self._tests_dir, {"normalize": False, "batch_size": 1})
         while reader.has_next():

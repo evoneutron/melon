@@ -1,0 +1,3 @@
+#map
+img275.jpg:2
+img928.jpg:2
