@@ -5,12 +5,12 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="melon",
-    version="0.0.5",
+    version="0.0.6",
     author="evoneutron",
     author_email="evoneutron@gmail.com",
     description="Lightweight package meant to simplify data processing for Deep Learning",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst; charset=UTF-8",
     packages=setuptools.find_packages(),
     url="https://github.com/evoneutron/melon",
     classifiers=[

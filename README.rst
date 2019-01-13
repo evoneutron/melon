@@ -1,5 +1,4 @@
-.. |Build-Status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
-   :target: https://travis-ci.com/evoneutron/melon
+|Build-Status|
 
 Melon
 =====
@@ -175,3 +174,8 @@ Roadmap
 - Support for video data
 
 - Support for textual data
+
+
+
+.. |Build-Status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
+    :target: https://travis-ci.com/evoneutron/melon
