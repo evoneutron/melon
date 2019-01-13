@@ -133,7 +133,7 @@ Labeling
 
 **Generating labels file**
 
-| To generate ``labels`` file we can use CLI with the following command:
+| To generate ``labels`` file use the following command:
 
 .. code-block:: text
 
