@@ -79,7 +79,7 @@ class ImageReaderTestCase(TestCase):
 
     def test_one_hot_result_order(self):
         pixels = self._expected_pixels()
-        reader = ImageReader(self._tests_dir, {"normalize": False, "num_threads": 1})
+        reader = ImageReader(self._tests_dir, {"normalize": False})
         x, y = reader.read()
         for i in range(len(y)):
             label = y[i].tolist().index(1)  # in one-hot-encoding location of 1 should match the label

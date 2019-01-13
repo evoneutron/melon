@@ -84,7 +84,7 @@ Examples
         reader = ImageReader(source_dir, options)
         ...
 
-| This changes output of data to ``channels-last`` format (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
+| This changes format of data to ``channels-last`` (each sample will be ``Height x Width x Channel``) and doesn't normalize the data. See options_ for available options.
 
 .. _options:
 
@@ -140,26 +140,27 @@ Labeling
     $ melon generate
     > Source dir:
 
-| After providing source directory the tool will generate ``labels`` file in that directory with blank labels. Final step is to add a label to each row in the generated file.
+| After providing source directory the tool will generate ``labels`` file in that directory with blank labels.
+| Final step is to add a label to each row in the generated file.
 |
 | For reference see ``tests/reosurces/images/labels.txt``:
 
 .. code-block:: text
 
     #legend
-    1 : human
-    2 : pedestrian
-    3 : cat
-    4 : parrot
-    5 : car
+    pedestrian:0
+    cat:1
+    parrot:2
+    car:3
+    apple tree:4
 
     #map
-    img275:3
-    img324:4
-    img551:5
-    img872:1
-    img928:3
-    img999:2
+    img275.jpg:1
+    img324.jpg:2
+    img551.jpg:3
+    img928.jpg:1
+    img999.png:0
+    img736.png:4
 
 | ``#legend`` section is optional but ``#map`` section is required to map a label to an image.
 
