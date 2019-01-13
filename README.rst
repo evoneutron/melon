@@ -46,8 +46,7 @@ Examples
         with tf.Session() as s:
             s.run(..., feed_dict = {X_placeholder: X, Y_placeholder: Y})
 
-| ``source_dir`` directory should contain images that need to be read. See ``tests/resources/images/sample`` for a sample directory.
-| In sample directory there is an optional ``labels.txt`` file that is described in Labeling_.
+| ``source_dir`` directory should contain images that need to be read. See ``tests/resources/images/sample`` for a sample directory. In the sample directory there is an optional ``labels.txt`` file that is described in Labeling_.
 
 -------
 
@@ -143,7 +142,7 @@ Labeling
 | After providing source directory the tool will generate ``labels`` file in that directory with blank labels.
 | Final step is to add a label to each row in the generated file.
 |
-| For reference see ``tests/reosurces/images/labels.txt``:
+| For reference see ``tests/resources/images/sample/labels.txt``:
 
 .. code-block:: text
 
