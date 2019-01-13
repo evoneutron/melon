@@ -1,5 +1,5 @@
-import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class Reader(ABC):
@@ -12,15 +12,10 @@ class Reader(ABC):
     def _validate_file(self, file):
         pass
 
-    @staticmethod
-    def _list_files(source_dir):
-        return [f for f in os.listdir(source_dir) if os.path.isfile(os.path.join(source_dir, f))]
-
     def _list_and_validate(self, source_dir):
-        files = self._list_files(source_dir)
+        files = list(Path(source_dir).glob("**/*"))
         valid_files = []
-        for f in files:
-            file = source_dir / f
+        for file in files:
             if self._validate_file(file):
                 valid_files.append(file)
 

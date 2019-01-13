@@ -121,36 +121,35 @@ class ImageReader(Reader):
         return True
 
     def _read_meta(self):
-        dir = Path(self.__source_dir)
         try:
-            labels, classes = self._read_labels_and_classes(dir)
+            labels, classes = self._read_labels_and_classes()
         except Exception as e:
             raise ValueError("Failed to read labels. {}".format(str(e)))
 
         try:
-            files = self._list_and_validate(dir)
+            files = self._list_and_validate(self.__source_dir)
         except Exception as e:
             raise ValueError("Failed to read image files. {}".format(str(e)))
 
         return labels, classes, files
 
-    def _read_labels_and_classes(self, dir):
+    def _read_labels_and_classes(self):
         """
         Reads labels file and returns mapping of file to label
         :param dir: source directory
         :return: tuple of 'dictionary of file to label mapping' and 'set of all distinct classes'
         """
         labels = {}
-        labels_files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f)) and f.startswith("labels")]
+        labels_files = list(Path(self.__source_dir).glob("labels*"))
         if not labels_files:
             self._log.info("No labels file provided. Label vector will not be loaded.")
             return labels
 
         classes = set()
 
-        file = Path(dir / labels_files[0])
+        file = labels_files[0]
         read_files = False
-        with open(file) as infile:
+        with open(str(file)) as infile:
             for line in infile:
                 line = line.strip()
                 if not line: continue
