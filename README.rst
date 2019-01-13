@@ -11,7 +11,6 @@ Melon
 | The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**.
 | The tool also provides various level of customizations depending on the use-case.
 
-
 Installation
 ------------
 
@@ -21,16 +20,16 @@ Install and update using `pip`_:
 
     $ pip install melon
 
-Supported in Python >=3.4.0
+Supported in Python >= 3.4.0
 
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
-
 
 Examples
 ----------------
 
 **Images**
 
+|
 | *With default* options_:
 
 .. code-block:: python
@@ -50,6 +49,7 @@ Examples
 
 -------
 
+|
 | Since number of images may be too large to fit into memory the tool supports batch-processing.
 |
 
@@ -71,6 +71,7 @@ Examples
 
 .. _Custom options:
 
+|
 | *With custom* options_:
 
 .. code-block:: python
