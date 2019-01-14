@@ -1,4 +1,4 @@
-|Build-Status|
+|build-status| |coverage-status|
 
 Melon
 =====
@@ -175,8 +175,11 @@ Roadmap
 
 
 
-.. |Build-Status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
+.. |build-status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
     :target: https://travis-ci.com/evoneutron/melon
+
+.. |coverage-status| image:: https://codecov.io/gh/evoneutron/melon/branch/master/graphs/badge.svg
+   :target: https://codecov.io/gh/evoneutron/melon/branch/master
 
 .. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
 
