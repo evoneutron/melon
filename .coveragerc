@@ -1,0 +1,16 @@
+[run]
+branch = True
+source = melon
+
+[report]
+exclude_lines =
+    if self.debug:
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+omit =
+    tests/*
+    venv/*
+    scripts/*
+    setup.py
+#show_missing = True
