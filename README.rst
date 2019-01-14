@@ -29,8 +29,7 @@ Examples
 
 **Images**
 
-|
-| *With default* options_:
+With default options_:
 
 .. code-block:: python
 
@@ -49,9 +48,7 @@ Examples
 
 -------
 
-|
-| Since number of images may be too large to fit into memory the tool supports batch-processing.
-|
+Since number of images may be too large to fit into memory the tool supports batch-processing.
 
 .. code-block:: python
 
@@ -71,8 +68,7 @@ Examples
 
 .. _Custom options:
 
-|
-| *With custom* options_:
+With custom options_:
 
 .. code-block:: python
 
@@ -168,7 +164,7 @@ Labeling
 
 **Format of the labels**
 
-| Label's format can be specified in `Custom options`_. It defaults to ``one-hot`` format.
+Label's format can be specified in `Custom options`_. It defaults to ``one-hot`` format.
 
 Roadmap
 -------
