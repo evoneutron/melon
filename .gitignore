@@ -9,3 +9,4 @@ __pycache__
 temp_resource
 main.py
 .python-version
+.coverage

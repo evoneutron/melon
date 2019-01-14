@@ -164,7 +164,7 @@ Labeling
 
 **Format of the labels**
 
-Label's format can be specified in `Custom options`_. It defaults to ``one-hot`` format.
+Label's output format can be specified in `Custom options`_. It defaults to ``one-hot`` format.
 
 Roadmap
 -------
