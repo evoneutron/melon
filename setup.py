@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="melon",
-    version="0.0.6",
+    version="0.1.0",
     author="evoneutron",
     author_email="evoneutron@gmail.com",
     description="Lightweight package meant to simplify data processing for Deep Learning",
