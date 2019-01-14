@@ -43,7 +43,7 @@ With default options_:
         with tf.Session() as s:
             s.run(..., feed_dict = {X_placeholder: X, Y_placeholder: Y})
 
-| ``source_dir`` directory should contain images that need to be read. See |sample-directory| for reference.
+| ``source_dir`` directory should contain images that need to be read. See `sample directory`_ for reference.
 | In the sample directory there is an optional ``labels.txt`` file that is described in Labeling_.
 
 -------
@@ -139,7 +139,7 @@ Labeling
 | After providing source directory the tool will generate ``labels`` file in that directory with blank labels.
 | Final step is to add a label to each row in the generated file.
 |
-| For reference see |sample-labels|:
+| For reference see `sample labels`_:
 
 .. code-block:: text
 
@@ -178,11 +178,6 @@ Roadmap
 .. |Build-Status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
     :target: https://travis-ci.com/evoneutron/melon
 
-.. |sample-directory| raw:: html
+.. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
 
-    <a href="https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample/" target="_blank">sample directory</a>
-
-.. |sample-labels| raw:: html
-
-    <a href="https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample/labels.txt" target="_blank">sample labels</a>
-
+.. _`sample labels`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample/labels.txt
