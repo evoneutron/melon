@@ -169,9 +169,11 @@ Label's format can be specified in `Custom options`_. It defaults to ``one-hot``
 Roadmap
 -------
 
-- Support for video data
+- Support for textual data (Q1 2019)
 
-- Support for textual data
+- Support for video data (Q1 2019)
+
+- Support for reading from AWS S3 (Q2 2019)
 
 
 
