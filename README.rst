@@ -8,7 +8,7 @@ Melon
 | It removes the need for boilerplate code to pre-process the data prior to (model) training, testing and inference.
 | It aims at standardizing data serialization and manipulation approaches.
 |
-| The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch**.
+| The default formats align with the requirements by frameworks such as **Tensorflow** / **PyTorch** / **Keras**.
 | The tool also provides various level of customizations depending on the use-case.
 
 Installation

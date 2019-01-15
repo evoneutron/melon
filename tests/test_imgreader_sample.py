@@ -15,6 +15,12 @@ class ImageReaderTestCase(TestCase):
         self.assertEqual((6, 3, 255, 255), x.shape)
         self.assertEqual((6, 5), y.shape)
 
+    def test_result_shape_channels_last(self):
+        reader = ImageReader(self._tests_dir, {"data_format": "channels_last"})
+        x, y = reader.read()
+        self.assertEqual((6, 255, 255, 3), x.shape)
+        self.assertEqual((6, 5), y.shape)
+
     def test_result_shape_label_format(self):
         reader = ImageReader(self._tests_dir, {"label_format": "label"})
         x, y = reader.read()
@@ -53,29 +59,18 @@ class ImageReaderTestCase(TestCase):
 
     def test_batch_read_ensure_all_files_were_read(self):
         mock_img_arr = numpy.ndarray((3, 255, 255))
+        mock_labels, mock_classes, mock_files = self._mock_meta(25)
+        with mock.patch.object(ImageReader, "_read_meta", return_value=(mock_labels, mock_classes, mock_files)):
+            with mock.patch.object(ImageReader, '_img_to_arr', return_value=mock_img_arr):
+                reader = ImageReader(self._tests_dir, {"batch_size": 3})
+                while reader.has_next():
+                    x, y = reader.read()
+                    for label_vector in y:
+                        label = label_vector.tolist().index(1)
+                        del mock_labels["img_{}.jpg".format(label)]
 
-        mock_files = []
-        mock_labels = {}
-        mock_classes = set()
-        for i in range(0, 25):
-            file_name = "img_{}.jpg".format(i)
-            mock_files.append(pathlib.Path(file_name))
-            mock_labels[file_name] = int(i)
-            mock_classes.add(int(i))
-
-        with mock.patch.object(ImageReader, '_list_and_validate', return_value=mock_files):
-            with mock.patch.object(ImageReader, '_read_labels_and_classes', return_value=(mock_labels, mock_classes)):
-                with mock.patch.object(ImageReader, '_img_to_arr', return_value=mock_img_arr):
-                    options = {"batch_size": 3}
-                    reader = ImageReader(self._tests_dir, options)
-                    while reader.has_next():
-                        x, y = reader.read()
-                        for label_vector in y:
-                            label = label_vector.tolist().index(1)
-                            del mock_labels["img_{}.jpg".format(label)]
-
-                    self.assertFalse(reader.has_next())
-                    self.assertTrue(not mock_labels)
+                self.assertFalse(reader.has_next())
+                self.assertTrue(not mock_labels)
 
     def test_result_order(self):
         pixels = self._expected_pixels()
@@ -109,6 +104,21 @@ class ImageReaderTestCase(TestCase):
             self.assertEqual((1, 3, 255, 255), x.shape)
             self.assertEqual((1, 5), y.shape)
 
+    def test_invalid_data_format_should_raise_error(self):
+        with self.assertRaises(ValueError) as context:
+            reader = ImageReader(self._tests_dir, {"data_format": "bogus_format"})
+            reader.read()
+            self.assertTrue("Unknown data format" in str(context))
+
+    def test_thread_batch_size_with_remainder(self):
+        mock_img_arr = numpy.ndarray((3, 255, 255))
+        with mock.patch.object(ImageReader, "_read_meta", return_value=self._mock_meta(18)):
+            with mock.patch.object(ImageReader, '_img_to_arr', return_value=mock_img_arr):
+                reader = ImageReader(self._tests_dir, {"num_threads": 4})
+                x, y = reader.read()
+                self.assertEqual((18, 3, 255, 255), x.shape)
+                self.assertEqual((18, 18), y.shape)
+
     @staticmethod
     def _expected_pixels():
         pixels = dict()
@@ -118,6 +128,19 @@ class ImageReaderTestCase(TestCase):
         pixels[3] = [255, 255, 255, 255, 255]
         pixels[4] = [246, 246, 246, 246, 246]
         return pixels
+
+    @staticmethod
+    def _mock_meta(cnt, ext="jpg"):
+        mock_files = []
+        mock_labels = {}
+        mock_classes = set()
+        for i in range(0, cnt):
+            file_name = "img_{}.{}".format(i, ext)
+            mock_files.append(pathlib.Path(file_name))
+            mock_labels[file_name] = int(i)
+            mock_classes.add(int(i))
+
+        return mock_labels, mock_classes, mock_files
 
 
 if __name__ == '__main__':

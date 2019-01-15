@@ -173,14 +173,17 @@ class ImageReader(Reader):
 
         return labels, classes
 
-    def _img_to_arr(self, img_file, dtype='float32'):
+    def _img_to_arr(self, img_file, dtype=np.float32):
         img = pil_image.open(img_file)
         with img:
-            hsize = self.__height
-            if self.__preserve_aspect_ratio:
-                wpercent = (self.__width / float(img.size[0]))
-                hsize = int((float(img.size[1]) * float(wpercent)))
-            img = img.resize((self.__width, hsize), pil_image.BICUBIC)
+            # if img.mode != 'RGB':
+            #     img = img.convert('RGB')
+
+            # if self.__preserve_aspect_ratio:
+            #     wpercent = (self.__width / float(img.size[0]))
+            #     self.__height = int((float(img.size[1]) * float(wpercent)))
+
+            img = img.resize((self.__width, self.__height), pil_image.BICUBIC)
             arr = np.asarray(img, dtype=dtype)
             if len(arr.shape) == 3:
                 # RGB
@@ -209,7 +212,6 @@ class ImageReader(Reader):
 
         for file in batch:
             label = self.__labels.get(file.name) if file.name in self.__labels else -1
-            tr=self._img_to_arr(file)
             x[index] = self._img_to_arr(file)
             y[index] = label
             index += 1
