@@ -1,4 +1,4 @@
-|build-status| |coverage-status|
+|build-status| |coverage-status| |pypi-reference|
 
 Melon
 =====
@@ -182,6 +182,9 @@ Roadmap
 
 .. |coverage-status| image:: https://codecov.io/gh/evoneutron/melon/branch/master/graphs/badge.svg
    :target: https://codecov.io/gh/evoneutron/melon/branch/master
+
+.. |pypi-reference| image:: https://badge.fury.io/py/melon.svg
+   :target: https://badge.fury.io/py/melon
 
 .. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
 
