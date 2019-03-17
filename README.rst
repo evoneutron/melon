@@ -1,4 +1,4 @@
-|build-status| |coverage-status| |pypi-reference|
+|build-status| |coverage-status| |pypi-reference| |pypi-downloads|
 
 Melon
 =====
@@ -185,6 +185,9 @@ Roadmap
 
 .. |pypi-reference| image:: https://badge.fury.io/py/melon.svg
    :target: https://badge.fury.io/py/melon
+
+.. |pypi-downloads| image:: https://pepy.tech/badge/melon
+   :target: https://pepy.tech/project/melon
 
 .. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
 
