@@ -1,4 +1,4 @@
-|build-status| |coverage-status|
+|build-status| |coverage-status| |pypi-reference| |pypi-downloads|
 
 Melon
 =====
@@ -169,8 +169,6 @@ Label's output format can be specified in `Custom options`_. It defaults to ``on
 Roadmap
 -------
 
-- Support for textual data (Q1 2019)
-
 - Support for video data (Q1 2019)
 
 - Support for reading from AWS S3 (Q2 2019)
@@ -182,6 +180,12 @@ Roadmap
 
 .. |coverage-status| image:: https://codecov.io/gh/evoneutron/melon/branch/master/graphs/badge.svg
    :target: https://codecov.io/gh/evoneutron/melon/branch/master
+
+.. |pypi-reference| image:: https://badge.fury.io/py/melon.svg
+   :target: https://badge.fury.io/py/melon
+
+.. |pypi-downloads| image:: https://pepy.tech/badge/melon
+   :target: https://pepy.tech/project/melon
 
 .. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
 
