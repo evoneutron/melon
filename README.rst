@@ -175,11 +175,11 @@ Roadmap
 
 
 
-.. |build-status| image:: https://travis-ci.com/evoneutron/melon.svg?branch=master
-    :target: https://travis-ci.com/evoneutron/melon
+.. |build-status| image:: https://travis-ci.com/romanjoffee/melon.svg?branch=master
+    :target: https://travis-ci.com/romanjoffee/melon
 
-.. |coverage-status| image:: https://codecov.io/gh/evoneutron/melon/branch/master/graphs/badge.svg
-   :target: https://codecov.io/gh/evoneutron/melon/branch/master
+.. |coverage-status| image:: https://codecov.io/gh/romanjoffee/melon/branch/master/graphs/badge.svg
+   :target: https://codecov.io/gh/romanjoffee/melon/branch/master
 
 .. |pypi-reference| image:: https://badge.fury.io/py/melon.svg
    :target: https://badge.fury.io/py/melon
@@ -187,6 +187,6 @@ Roadmap
 .. |pypi-downloads| image:: https://pepy.tech/badge/melon
    :target: https://pepy.tech/project/melon
 
-.. _`sample directory`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample
+.. _`sample directory`: https://github.com/romanjoffee/melon/tree/master/tests/resources/images/sample
 
-.. _`sample labels`: https://github.com/evoneutron/melon/tree/master/tests/resources/images/sample/labels.txt
+.. _`sample labels`: https://github.com/romanjoffee/melon/tree/master/tests/resources/images/sample/labels.txt

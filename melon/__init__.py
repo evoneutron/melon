@@ -1,5 +1,5 @@
 name = "melon"
-author = "evoneutron"
+author = "romanjoffee"
 
 from .imgreader import ImageReader
 

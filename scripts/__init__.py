@@ -1,2 +1,2 @@
 name = "melon-cli"
-author = "evoneutron"
+author = "romanjoffee"
