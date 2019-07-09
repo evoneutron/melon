@@ -169,9 +169,9 @@ Label's output format can be specified in `Custom options`_. It defaults to ``on
 Roadmap
 -------
 
-- Support for video data (Q1 2019)
+- Support for video data (Q3 2019)
 
-- Support for reading from AWS S3 (Q2 2019)
+- Support for reading from AWS S3 (Q4 2019)
 
 
 

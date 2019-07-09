@@ -74,7 +74,21 @@ class ImageReader(Reader):
 
             y = np.empty(m, dtype=np.int32)
             if self.__format == "channels_first":
+
+
                 x = np.ndarray(shape=(m, self._default_channels, self.__height, self.__width), dtype=np.float32)
+
+
+
+
+
+
+
+
+
+
+
+
             elif self.__format == "channels_last":
                 x = np.ndarray(shape=(m, self.__height, self.__width, self._default_channels), dtype=np.float32)
             else:
@@ -176,13 +190,6 @@ class ImageReader(Reader):
     def _img_to_arr(self, img_file, dtype=np.float32):
         img = pil_image.open(img_file)
         with img:
-            # if img.mode != 'RGB':
-            #     img = img.convert('RGB')
-
-            # if self.__preserve_aspect_ratio:
-            #     wpercent = (self.__width / float(img.size[0]))
-            #     self.__height = int((float(img.size[1]) * float(wpercent)))
-
             img = img.resize((self.__width, self.__height), pil_image.BICUBIC)
             arr = np.asarray(img, dtype=dtype)
             if len(arr.shape) == 3:
