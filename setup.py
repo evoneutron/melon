@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["click==7.0", "tqdm==4.29.0", "tqdm==4.29.0", "pillow==5.4.1"],
+    install_requires=["click==7.0", "tqdm==4.29.0", "tqdm==4.29.0", "pillow==6.2.0"],
     entry_points={
         "console_scripts": [
             "melon=scripts.cli:cli"
